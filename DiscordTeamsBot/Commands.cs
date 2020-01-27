@@ -644,4 +644,86 @@ namespace DiscordTeamsBot.Commands
             await msg.Channel.SendMessageAsync("", embed: embed);
         }
     }
+
+    class RoleInfo : IDiscordCommand
+    {
+        public string Name => "roleInfo";
+
+        public string Help => "Provides info about the targeted role";
+
+        public string Syntax => "-roleInfo {@role}";
+
+        public string Permission => "default";
+
+        public async Task ExecuteAsync(SocketUserMessage msg, string[] parameters)
+        {
+            EmbedBuilder eb = new EmbedBuilder();
+            EmbedFooterBuilder efb = new EmbedFooterBuilder();
+
+            string leaderRole = Config.leaderRole;
+
+            var uRole = Convert.ToUInt64(leaderRole);
+
+            string targetId = msg.MentionedUsers.Count == 1 ? msg.MentionedUsers.First().Id.ToString() : parameters[0];
+            SocketGuild server = ((SocketGuildChannel)msg.Channel).Guild;
+            SocketGuildUser target = server.Users.FirstOrDefault(x => x.Id.ToString() == targetId);
+
+            var lRole = server.GetRole(uRole);
+
+            SocketGuildUser gUser = (SocketGuildUser)msg.Author;
+
+            if (msg.Channel.Id != Convert.ToUInt64(File.ReadAllText(Program.channelLocation)))
+            {
+                string tcID = File.ReadAllText(Program.channelLocation);
+
+                eb.AddField("Locked!", $"**This bot can only be used in <#{tcID}>**");
+                eb.Color = Color.Red;
+
+                var embedLocked = eb.Build();
+
+                await msg.Channel.SendMessageAsync("", embed: embedLocked);
+                return;
+            }
+
+            if (parameters.Length != 1)
+            {
+                eb.AddField("**Wrong command usage**", $"**{Syntax}**");
+                eb.Color = Color.Red;
+
+                var embedWU = eb.Build();
+
+                var wrongUsage = await msg.Channel.SendMessageAsync("", embed: embedWU);
+                await Task.Delay(5000);
+                await wrongUsage.DeleteAsync();
+                return;
+            }
+
+            //Parse Role ID
+            string r1 = parameters[0].Replace("<", "");
+            string r2 = r1.Replace("&", "");
+            string r3 = r2.Replace("@", "");
+            string RoleID = r3.Replace(">", "");
+            //replace this with a foreach statement
+
+            var roleOut = Convert.ToUInt64(RoleID);
+
+            var RoleL = server.GetRole(roleOut);
+
+            eb.AddField("Role Name", $"{RoleL.Mention} ({RoleL.Name})");
+            eb.AddField("Role ID", $"{RoleL.Id}");
+            eb.AddField("Role RGB Value", $"{RoleL.Color.R}, {RoleL.Color.G}, {RoleL.Color.B}");
+            eb.AddField("Role Members", $"{RoleL.Members.Count()}");
+
+            eb.Color = RoleL.Color;
+
+            efb.Text = DateTime.Now.ToString();
+            efb.IconUrl = msg.Author.GetAvatarUrl();
+
+            eb.WithFooter(efb);
+
+            var embed = eb.Build();
+
+            await msg.Channel.SendMessageAsync(embed: embed);
+        }
+    }
 }
