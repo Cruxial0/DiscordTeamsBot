@@ -501,4 +501,147 @@ namespace DiscordTeamsBot.Commands
             await msg.Channel.SendMessageAsync($"", embed: embed);
         }
     }
+
+    class Kick : IDiscordCommand
+    {
+        public string Name => "Kick";
+
+        public string Help => "Kicks a user from the targeted role.";
+
+        public string Syntax => "-Kick {@user} {@role}";
+
+        public string Permission => "default";
+
+        public async Task ExecuteAsync(SocketUserMessage msg, string[] parameters)
+        {
+            EmbedBuilder eb = new EmbedBuilder();
+            EmbedFooterBuilder efb = new EmbedFooterBuilder();
+
+            string leaderRole = Config.leaderRole;
+
+            var uRole = Convert.ToUInt64(leaderRole);
+
+            string targetId = msg.MentionedUsers.Count == 1 ? msg.MentionedUsers.First().Id.ToString() : parameters[0];
+            SocketGuild server = ((SocketGuildChannel)msg.Channel).Guild;
+            SocketGuildUser target = server.Users.FirstOrDefault(x => x.Id.ToString() == targetId);
+
+            var lRole = server.GetRole(uRole);
+
+            SocketGuildUser gUser = (SocketGuildUser)msg.Author;
+
+            if (msg.Channel.Id != Convert.ToUInt64(File.ReadAllText(Program.channelLocation)))
+            {
+                string tcID = File.ReadAllText(Program.channelLocation);
+
+                eb.AddField("Locked!", $"**This bot can only be used in <#{tcID}>**");
+                eb.Color = Color.Red;
+
+                var embedLocked = eb.Build();
+
+                await msg.Channel.SendMessageAsync("", embed: embedLocked);
+                return;
+            }
+
+            if (!gUser.Roles.Contains(lRole))
+            {
+                eb.AddField("No permission!", $"You need the {lRole.Mention} role to execute this command!");
+                eb.Color = Color.Red;
+
+                efb.IconUrl = gUser.GetAvatarUrl();
+                efb.Text = efb.Text = DateTime.Now.ToString();
+
+                eb.WithFooter(efb);
+
+                var embedR = eb.Build();
+
+                await msg.Channel.SendMessageAsync("", embed: embedR);
+
+                return;
+            }
+
+            if (parameters.Length != 2)
+            {
+                eb.AddField("**Wrong command usage**", $"**{Syntax}**");
+                eb.Color = Color.Red;
+
+                var embedWU = eb.Build();
+
+                var wrongUsage = await msg.Channel.SendMessageAsync("", embed: embedWU);
+                await Task.Delay(5000);
+                await wrongUsage.DeleteAsync();
+                return;
+            }
+
+            //Parse Role ID
+            string r1 = parameters[1].Replace("<", "");
+            string r2 = r1.Replace("&", "");
+            string r3 = r2.Replace("@", "");
+            string RoleID = r3.Replace(">", "");
+            //replace this with a foreach statement
+
+            var roleOut = Convert.ToUInt64(RoleID);
+
+            var RoleL = server.GetRole(roleOut);
+
+            SocketGuildUser author = (SocketGuildUser)msg.Author;
+
+            if (RoleL.Id == lRole.Id)
+            {
+                await msg.Channel.SendMessageAsync("**You can't add anyone to the Leader role!**");
+                return;
+            }
+
+            if (!author.Roles.Contains(RoleL))
+            {
+                eb.AddField("Error!", $"{author.Mention} you can't invite an user to a role you don't have! If this is a mistake please contact a moderator!");
+
+                eb.Color = Color.Red;
+
+                efb.IconUrl = author.GetAvatarUrl();
+                efb.Text = DateTime.Now.ToString();
+
+                eb.WithFooter(efb);
+
+                var embedA = eb.Build();
+
+                await msg.Channel.SendMessageAsync("", embed: embedA);
+
+                return;
+            }
+
+            if (!target.Roles.Contains(RoleL))
+            {
+                eb.AddField("Error!", $"{author.Mention}: **You can't kick someone from a role they don't have!**");
+
+                eb.Color = Color.Red;
+
+                efb.IconUrl = author.GetAvatarUrl();
+                efb.Text = DateTime.Now.ToString();
+
+                eb.WithFooter(efb);
+
+                var embedT = eb.Build();
+
+                await msg.Channel.SendMessageAsync("", embed: embedT);
+
+                return;
+            }
+
+            await target.RemoveRoleAsync(RoleL);
+
+            eb.Title = "Kick";
+
+            eb.AddField("Success!", $"{target.Mention} has been removed from {RoleL.Mention}");
+            eb.Color = RoleL.Color;
+
+            eb.ThumbnailUrl = target.GetAvatarUrl();
+
+            efb.Text = DateTime.Now.ToString();
+            efb.IconUrl = author.GetAvatarUrl();
+
+            var embed = eb.Build();
+
+            await msg.Channel.SendMessageAsync("", embed: embed);
+        }
+    }
 }

@@ -33,7 +33,7 @@ namespace DiscordTeamsBot
             EmbedBuilder eb = new EmbedBuilder();
             EmbedFooterBuilder efb = new EmbedFooterBuilder();
 
-            if (parameters.Length != 2)
+            if (parameters.Length != 0)
             {
                 eb.AddField("**Wrong command usage**", $"**{Syntax}**");
                 eb.Color = Color.Red;
@@ -45,6 +45,27 @@ namespace DiscordTeamsBot
                 await wrongUsage.DeleteAsync();
                 return;
             }
+
+            ulong roleID = Convert.ToUInt64(Config.leaderRole);
+
+            SocketGuild server = ((SocketGuildChannel)msg.Channel).Guild;
+
+            var role = server.GetRole(roleID);
+
+            eb.AddField("Bot channel", $"<#{Config.channelLockId}>");
+            eb.AddField("Leader role", $"{role.Mention}");
+            eb.AddField("Team limit", $"{Config.teamLimit}");
+
+            eb.Color = Color.Teal;
+
+            efb.Text = DateTime.Now.ToString();
+            efb.IconUrl = msg.Author.GetAvatarUrl();
+
+            eb.WithFooter(efb);
+
+            var embed = eb.Build();
+
+            await msg.Channel.SendMessageAsync("", embed: embed);
         }
     }
 }
