@@ -18,12 +18,14 @@ namespace CruxBot
 
     public class Program
     {
+        //Initialize bot
         static void Main(string[] args)
         {
             Console.WriteLine("Bot starting...", Console.ForegroundColor = ConsoleColor.Yellow);
             new Program().MainAsync().GetAwaiter().GetResult();
         }
 
+        //Declare bot variables and file locations
         internal static CommandHandler handler;
         internal static DiscordSocketClient client;
         internal static CancellationTokenSource cancelSrc = new CancellationTokenSource();
@@ -34,16 +36,21 @@ namespace CruxBot
 
         public async Task MainAsync()
         {
+            //Load permissions
             Permissions.Load();
 
+            //Declare client
             client = new DiscordSocketClient();
 
+            //Declare handler and add prefix
             handler = new CommandHandler(client, "-");
 
+            //Start bot
             await client.SetGameAsync("team roles", "", ActivityType.Watching);
             await client.LoginAsync(TokenType.Bot, Secret.token);
             await client.StartAsync();
 
+            //Check if config files exist
             if (!File.Exists(channelLocation)) File.Create(channelLocation);
             if (!File.Exists(leaderLocation)) File.Create(leaderLocation);
             if (!File.Exists(teamLimitLocation)) File.Create(teamLimitLocation);

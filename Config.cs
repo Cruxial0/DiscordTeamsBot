@@ -68,4 +68,29 @@ namespace DiscordTeamsBot
             await msg.Channel.SendMessageAsync("", embed: embed);
         }
     }
+
+    class ClearConfig : IDiscordCommand
+    {
+        public string Name => "clearConfig";
+
+        public string Help => "clears the config file";
+
+        public string Syntax => "-clearConfig";
+
+        public string Permission => "admin";
+
+        public async Task ExecuteAsync(SocketUserMessage msg, string[] parameters)
+        {
+            if(parameters.Length != 0)
+            {
+                await msg.Channel.SendMessageAsync($"**Wrong usage!, `{Syntax}`**");
+            }
+
+            File.WriteAllText(Config.channelLockId, "");
+            File.WriteAllText(Config.teamLimit, "");
+            File.WriteAllText(Config.leaderRole, "");
+
+            await msg.Channel.SendMessageAsync("**Config file was cleared!**");
+        }
+    }
 }
