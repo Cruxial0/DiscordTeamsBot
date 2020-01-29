@@ -51,7 +51,7 @@ namespace DiscordTeamsBot.Commands
 
             eb.Color = Color.Orange;
 
-            efb.Text = DateTime.Now.ToString();
+            eb.WithTimestamp(DateTime.Now);
             efb.IconUrl = msg.Author.GetAvatarUrl();
 
             eb.WithFooter(efb);
@@ -215,7 +215,7 @@ namespace DiscordTeamsBot.Commands
                 eb.Color = Color.Red;
 
                 efb.IconUrl = msg.Author.GetAvatarUrl();
-                efb.Text = DateTime.Now.ToString();
+                eb.WithTimestamp(DateTime.Now);
 
                 eb.WithFooter(efb);
 
@@ -327,7 +327,7 @@ namespace DiscordTeamsBot.Commands
             eb.Color = Color.Green;
 
             efb.IconUrl = msg.Author.GetAvatarUrl();
-            efb.Text = DateTime.Now.ToString();
+            eb.WithTimestamp(DateTime.Now);
 
             eb.WithFooter(efb);
 
@@ -368,7 +368,7 @@ namespace DiscordTeamsBot.Commands
                 eb.Color = Color.Red;
 
                 efb.IconUrl = target.GetAvatarUrl();
-                efb.Text = DateTime.Now.ToString();
+                eb.WithTimestamp(DateTime.Now);
 
                 eb.WithFooter(efb);
 
@@ -416,7 +416,7 @@ namespace DiscordTeamsBot.Commands
             eb.Color = Color.Green;
 
             efb.IconUrl = target.GetAvatarUrl();
-            efb.Text = DateTime.Now.ToString();
+            eb.WithTimestamp(DateTime.Now);
 
             eb.WithFooter(efb);
 
@@ -472,7 +472,7 @@ namespace DiscordTeamsBot.Commands
                 eb.Color = Color.Red;
 
                 efb.IconUrl = gUser.GetAvatarUrl();
-                efb.Text = efb.Text = DateTime.Now.ToString();
+                eb.WithTimestamp(DateTime.Now);
 
                 eb.WithFooter(efb);
 
@@ -522,7 +522,7 @@ namespace DiscordTeamsBot.Commands
                 eb.Color = Color.Red;
 
                 efb.IconUrl = author.GetAvatarUrl();
-                efb.Text = DateTime.Now.ToString();
+                eb.WithTimestamp(DateTime.Now);
 
                 eb.WithFooter(efb);
 
@@ -540,7 +540,7 @@ namespace DiscordTeamsBot.Commands
                 eb.Color = Color.Red;
 
                 efb.IconUrl = author.GetAvatarUrl();
-                efb.Text = DateTime.Now.ToString();
+                eb.WithTimestamp(DateTime.Now);
 
                 eb.WithFooter(efb);
 
@@ -561,7 +561,7 @@ namespace DiscordTeamsBot.Commands
                 eb.Color = Color.Red;
 
                 efb.IconUrl = msg.Author.GetAvatarUrl();
-                efb.Text = DateTime.Now.ToString();
+                eb.WithTimestamp(DateTime.Now);
 
                 eb.WithFooter(efb);
 
@@ -621,9 +621,9 @@ namespace DiscordTeamsBot.Commands
 
             SocketGuildUser gUser = (SocketGuildUser)msg.Author;
 
-            if (msg.Channel.Id != Convert.ToUInt64(File.ReadAllText(Program.channelLocation)))
+            if (msg.Channel.Id != Convert.ToUInt64(Config.channelLockId))
             {
-                string tcID = File.ReadAllText(Program.channelLocation);
+                string tcID = Config.channelLockId;
 
                 eb.AddField("Locked!", $"**This bot can only be used in <#{tcID}>**");
                 eb.Color = Color.Red;
@@ -640,7 +640,7 @@ namespace DiscordTeamsBot.Commands
                 eb.Color = Color.Red;
 
                 efb.IconUrl = gUser.GetAvatarUrl();
-                efb.Text = efb.Text = DateTime.Now.ToString();
+                eb.WithTimestamp(DateTime.Now);
 
                 eb.WithFooter(efb);
 
@@ -690,7 +690,7 @@ namespace DiscordTeamsBot.Commands
                 eb.Color = Color.Red;
 
                 efb.IconUrl = author.GetAvatarUrl();
-                efb.Text = DateTime.Now.ToString();
+                eb.WithTimestamp(DateTime.Now);
 
                 eb.WithFooter(efb);
 
@@ -708,7 +708,7 @@ namespace DiscordTeamsBot.Commands
                 eb.Color = Color.Red;
 
                 efb.IconUrl = author.GetAvatarUrl();
-                efb.Text = DateTime.Now.ToString();
+                eb.WithTimestamp(DateTime.Now);
 
                 eb.WithFooter(efb);
 
@@ -728,7 +728,7 @@ namespace DiscordTeamsBot.Commands
 
             eb.ThumbnailUrl = target.GetAvatarUrl();
 
-            efb.Text = DateTime.Now.ToString();
+            eb.WithTimestamp(DateTime.Now);
             efb.IconUrl = author.GetAvatarUrl();
 
             var embed = eb.Build();
@@ -808,7 +808,159 @@ namespace DiscordTeamsBot.Commands
 
             eb.Color = RoleL.Color;
 
-            efb.Text = DateTime.Now.ToString();
+            eb.WithTimestamp(DateTime.Now);
+            efb.IconUrl = msg.Author.GetAvatarUrl();
+
+            eb.WithFooter(efb);
+
+            var embed = eb.Build();
+
+            await msg.Channel.SendMessageAsync(embed: embed);
+        }
+    }
+
+    class RandomColor : IDiscordCommand
+    {
+        public string Name => "randomColor";
+
+        public string Help => "Generates a random color";
+
+        public string Syntax => "-randomColor";
+
+        public string Permission => "default";
+
+        public async Task ExecuteAsync(SocketUserMessage msg, string[] parameters)
+        {
+            EmbedBuilder eb = new EmbedBuilder();
+            EmbedFooterBuilder efb = new EmbedFooterBuilder();
+
+            if (msg.Channel.Id != Convert.ToUInt64(Config.channelLockId))
+            {
+                string tcID = Config.channelLockId;
+
+                eb.AddField("Locked!", $"**This bot can only be used in <#{tcID}>**");
+                eb.Color = Color.Red;
+
+                var embedLocked = eb.Build();
+
+                await msg.Channel.SendMessageAsync("", embed: embedLocked);
+                return;
+            }
+
+            if (parameters.Length != 0)
+            {
+                eb.AddField("**Wrong command usage**", $"**{Syntax}**");
+                eb.Color = Color.Red;
+
+                var embedWU = eb.Build();
+
+                var wrongUsage = await msg.Channel.SendMessageAsync("", embed: embedWU);
+                await Task.Delay(5000);
+                await wrongUsage.DeleteAsync();
+                return;
+            }
+
+            Random rand = new Random();
+
+            int r = rand.Next(1, 255 + 1);
+            int g = rand.Next(1, 255 + 1);
+            int b = rand.Next(1, 255 + 1);
+
+            Color rndm = new Color(r, g, b);
+
+            string hex = rndm.R.ToString("X2") + rndm.G.ToString("X2") + rndm.B.ToString("X2");
+
+            eb.AddField("RGB Code", $"{r}, {g}, {b}");
+            eb.AddField("HEX code", $"#{hex}");
+            eb.Color = rndm;
+
+            eb.WithTimestamp(DateTime.Now);
+            efb.IconUrl = msg.Author.GetAvatarUrl();
+
+            eb.WithFooter(efb);
+
+            var embed = eb.Build();
+
+            await msg.Channel.SendMessageAsync(embed: embed);
+        }
+    }
+
+    class Members : IDiscordCommand
+    {
+        public string Name => "Members";
+
+        public string Help => "Shows the members within the targeted role";
+
+        public string Syntax => "-Members {@role}";
+
+        public string Permission => "default";
+
+        public async Task ExecuteAsync(SocketUserMessage msg, string[] parameters)
+        {
+            EmbedBuilder eb = new EmbedBuilder();
+            EmbedFooterBuilder efb = new EmbedFooterBuilder();
+
+            string leaderRole = Config.leaderRole;
+
+            var uRole = Convert.ToUInt64(leaderRole);
+
+            string targetId = msg.MentionedUsers.Count == 1 ? msg.MentionedUsers.First().Id.ToString() : parameters[0];
+            SocketGuild server = ((SocketGuildChannel)msg.Channel).Guild;
+            SocketGuildUser target = server.Users.FirstOrDefault(x => x.Id.ToString() == targetId);
+
+            var lRole = server.GetRole(uRole);
+
+            SocketGuildUser gUser = (SocketGuildUser)msg.Author;
+
+            if (msg.Channel.Id != Convert.ToUInt64(File.ReadAllText(Program.channelLocation)))
+            {
+                string tcID = File.ReadAllText(Program.channelLocation);
+
+                eb.AddField("Locked!", $"**This bot can only be used in <#{tcID}>**");
+                eb.Color = Color.Red;
+
+                var embedLocked = eb.Build();
+
+                await msg.Channel.SendMessageAsync("", embed: embedLocked);
+                return;
+            }
+
+            if (parameters.Length != 1)
+            {
+                eb.AddField("**Wrong command usage**", $"**{Syntax}**");
+                eb.Color = Color.Red;
+
+                var embedWU = eb.Build();
+
+                var wrongUsage = await msg.Channel.SendMessageAsync("", embed: embedWU);
+                await Task.Delay(5000);
+                await wrongUsage.DeleteAsync();
+                return;
+            }
+
+            //Parse Role ID
+            string r1 = parameters[0].Replace("<", "");
+            string r2 = r1.Replace("&", "");
+            string r3 = r2.Replace("@", "");
+            string RoleID = r3.Replace(">", "");
+            //replace this with a foreach statement
+
+            var roleOut = Convert.ToUInt64(RoleID);
+
+            var RoleL = server.GetRole(roleOut);
+
+            var members = RoleL.Members.ToList();
+
+            foreach (var member in members)
+            {
+                eb.AddField($"Member", $"{member.Mention}");
+            }
+
+            eb.Color = RoleL.Color;
+            eb.Title = "Members";
+            eb.WithTimestamp(DateTime.Now);
+
+            efb.Text = $"{RoleL.Members.Count()}/{Config.teamLimit} Members";
             efb.IconUrl = msg.Author.GetAvatarUrl();
 
             eb.WithFooter(efb);

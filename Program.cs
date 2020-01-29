@@ -8,6 +8,7 @@ using System.Threading;
 using DiscordTeamsBot;
 using System.IO;
 using DiscordTeamsBot.Commands;
+using System.Diagnostics;
 
 namespace CruxBot
 {
@@ -36,6 +37,10 @@ namespace CruxBot
 
         public async Task MainAsync()
         {
+            Stopwatch sw = new Stopwatch();
+
+            sw.Start();
+
             //Load permissions
             Permissions.Load();
 
@@ -55,7 +60,9 @@ namespace CruxBot
             if (!File.Exists(leaderLocation)) File.Create(leaderLocation);
             if (!File.Exists(teamLimitLocation)) File.Create(teamLimitLocation);
 
-            Console.WriteLine("Bot Started Sucessfully!", Console.ForegroundColor = ConsoleColor.Green);
+            Console.WriteLine($"Bot Started Sucessfully! ({sw.ElapsedMilliseconds}ms)", Console.ForegroundColor = ConsoleColor.Yellow);
+
+            sw.Stop();
 
             await Task.Delay(-1, cancelSrc.Token);
         }

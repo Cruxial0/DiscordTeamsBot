@@ -56,9 +56,12 @@ namespace DiscordTeamsBot
             eb.AddField("Leader role", $"{role.Mention}");
             eb.AddField("Team limit", $"{Config.teamLimit}");
 
+            eb.Title = "Prefrences";
+
             eb.Color = Color.Teal;
 
-            efb.Text = DateTime.Now.ToString();
+            eb.WithTimestamp(DateTime.Now);
+
             efb.IconUrl = msg.Author.GetAvatarUrl();
 
             eb.WithFooter(efb);
