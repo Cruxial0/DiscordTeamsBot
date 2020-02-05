@@ -53,3 +53,9 @@ C:\Users\Benjamin\source\repos\DiscordTeamsBot\DiscordTeamsBot\obj\Debug\Discord
 C:\Users\Benjamin\source\repos\DiscordTeamsBot\DiscordTeamsBot\obj\Debug\DiscordTeamsBot.csproj.CopyComplete
 C:\Users\Benjamin\source\repos\DiscordTeamsBot\DiscordTeamsBot\obj\Debug\DiscordTeamsBot.exe
 C:\Users\Benjamin\source\repos\DiscordTeamsBot\DiscordTeamsBot\obj\Debug\DiscordTeamsBot.pdb
+C:\Users\Benjamin\source\repos\DiscordTeamsBot\DiscordTeamsBot\bin\Debug\MySql.Data.dll
+C:\Users\Benjamin\source\repos\DiscordTeamsBot\DiscordTeamsBot\bin\Debug\Google.Protobuf.dll
+C:\Users\Benjamin\source\repos\DiscordTeamsBot\DiscordTeamsBot\bin\Debug\BouncyCastle.Crypto.dll
+C:\Users\Benjamin\source\repos\DiscordTeamsBot\DiscordTeamsBot\bin\Debug\Ubiety.Dns.Core.dll
+C:\Users\Benjamin\source\repos\DiscordTeamsBot\DiscordTeamsBot\bin\Debug\Renci.SshNet.dll
+C:\Users\Benjamin\source\repos\DiscordTeamsBot\DiscordTeamsBot\bin\Debug\MySql.Data.xml

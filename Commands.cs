@@ -4,10 +4,8 @@ using CruxBot;
 using Discord;
 using Discord.WebSocket;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DiscordTeamsBot.Commands
@@ -969,5 +967,170 @@ namespace DiscordTeamsBot.Commands
 
             await msg.Channel.SendMessageAsync(embed: embed);
         }
+
+        class AddCurrency : IDiscordCommand
+        {
+            public string Name => "addCurrency";
+
+            public string Help => "Adds a specified amount of currency to the target.";
+
+            public string Syntax => "-addCurrency {@user} {currency}";
+
+            public string Permission => "admin";
+
+            public async Task ExecuteAsync(SocketUserMessage msg, string[] parameters)
+            {
+                EmbedBuilder eb = new EmbedBuilder();
+                EmbedFooterBuilder efb = new EmbedFooterBuilder();
+
+                if (parameters.Length != 2)
+                {
+                    eb.AddField("**Wrong command usage**", $"**{Syntax}**");
+                    eb.Color = Color.Red;
+
+                    var embedWU = eb.Build();
+
+                    var wrongUsage = await msg.Channel.SendMessageAsync("", embed: embedWU);
+                    await Task.Delay(5000);
+                    await wrongUsage.DeleteAsync();
+                    return;
+                }
+
+                string targetId = msg.MentionedUsers.Count == 1 ? msg.MentionedUsers.First().Id.ToString() : parameters[0];
+                SocketGuild server = ((SocketGuildChannel)msg.Channel).Guild;
+                SocketGuildUser target = server.Users.FirstOrDefault(x => x.Id.ToString() == targetId);
+
+                if (parameters[1] == target.Mention)
+                {
+                    eb.AddField("**Wrong command usage**", $"**{Syntax}**");
+                    eb.Color = Color.Red;
+
+                    var embedWU = eb.Build();
+
+                    var wrongUsage = await msg.Channel.SendMessageAsync("", embed: embedWU);
+                    await Task.Delay(5000);
+                    await wrongUsage.DeleteAsync();
+                    return;
+                }
+
+                int currency;
+
+                string param1 = parameters[1];
+
+                try
+                {
+                    var curr = Convert.ToInt32(param1);
+                    currency = curr;
+                }
+                catch
+                {
+                    await msg.Channel.SendMessageAsync("**Something went wrong, are you sure this is an integer?**");
+                    return;
+                }
+
+                User.Insert(Convert.ToUInt64(targetId), currency);
+            }
+        }
+
+        class UpdateCurrency : IDiscordCommand
+        {
+            public string Name => "updateCurrency";
+
+            public string Help => "Updates the currency of the targeted user.";
+
+            public string Syntax => "-updateCurrency {@user} {newCurrency}";
+
+            public string Permission => "admin";
+
+            public async Task ExecuteAsync(SocketUserMessage msg, string[] parameters)
+            {
+                EmbedBuilder eb = new EmbedBuilder();
+                EmbedFooterBuilder efb = new EmbedFooterBuilder();
+
+                if (parameters.Length != 2)
+                {
+                    eb.AddField("**Wrong command usage**", $"**{Syntax}**");
+                    eb.Color = Color.Red;
+
+                    var embedWU = eb.Build();
+
+                    var wrongUsage = await msg.Channel.SendMessageAsync("", embed: embedWU);
+                    await Task.Delay(5000);
+                    await wrongUsage.DeleteAsync();
+                    return;
+                }
+
+                string targetId = msg.MentionedUsers.Count == 1 ? msg.MentionedUsers.First().Id.ToString() : parameters[0];
+                SocketGuild server = ((SocketGuildChannel)msg.Channel).Guild;
+                SocketGuildUser target = server.Users.FirstOrDefault(x => x.Id.ToString() == targetId);
+
+                if (parameters[1] == target.Mention)
+                {
+                    eb.AddField("**Wrong command usage**", $"**{Syntax}**");
+                    eb.Color = Color.Red;
+
+                    var embedWU = eb.Build();
+
+                    var wrongUsage = await msg.Channel.SendMessageAsync("", embed: embedWU);
+                    await Task.Delay(5000);
+                    await wrongUsage.DeleteAsync();
+                    return;
+                }
+
+                int currency;
+
+                string param1 = parameters[1];
+
+                try
+                {
+                    var curr = Convert.ToInt32(param1);
+                    currency = curr;
+                }
+                catch
+                {
+                    await msg.Channel.SendMessageAsync("**Something went wrong, are you sure this is an integer?**");
+                    return;
+                }
+
+                User.Update(Convert.ToUInt64(targetId), currency);
+            }
+        }
+
+        class Balance : IDiscordCommand
+        {
+            public string Name => "Balance";
+
+            public string Help => "Checks the balance of a user";
+
+            public string Syntax => "-balance {@user}";
+
+            public string Permission => "default";
+
+            public async Task ExecuteAsync(SocketUserMessage msg, string[] parameters)
+            {
+                EmbedBuilder eb = new EmbedBuilder();
+                EmbedFooterBuilder efb = new EmbedFooterBuilder();
+
+                if (parameters.Length != 1)
+                {
+                    eb.AddField("**Wrong command usage**", $"**{Syntax}**");
+                    eb.Color = Color.Red;
+
+                    var embedWU = eb.Build();
+
+                    var wrongUsage = await msg.Channel.SendMessageAsync("", embed: embedWU);
+                    await Task.Delay(5000);
+                    await wrongUsage.DeleteAsync();
+                    return;
+                }
+
+                string targetId = msg.MentionedUsers.Count == 1 ? msg.MentionedUsers.First().Id.ToString() : parameters[0];
+                SocketGuild server = ((SocketGuildChannel)msg.Channel).Guild;
+                SocketGuildUser target = server.Users.FirstOrDefault(x => x.Id.ToString() == targetId);
+
+                User.GetBalance(Convert.ToUInt64(targetId), msg);
+            }
+        }
     }
 }
+

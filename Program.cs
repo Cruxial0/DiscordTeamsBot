@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Threading;
 using DiscordTeamsBot;
 using System.IO;
-using DiscordTeamsBot.Commands;
 using System.Diagnostics;
 
 namespace CruxBot
@@ -59,6 +58,8 @@ namespace CruxBot
             if (!File.Exists(channelLocation)) File.Create(channelLocation);
             if (!File.Exists(leaderLocation)) File.Create(leaderLocation);
             if (!File.Exists(teamLimitLocation)) File.Create(teamLimitLocation);
+
+            User.InitializeDB();
 
             Console.WriteLine($"Bot Started Sucessfully! ({sw.ElapsedMilliseconds}ms)", Console.ForegroundColor = ConsoleColor.Yellow);
 
